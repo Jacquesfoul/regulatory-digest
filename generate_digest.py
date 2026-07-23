@@ -10,12 +10,6 @@ client = Anthropic(api_key=api_key)
 message = client.messages.create(
     model="claude-opus-4-6",
     max_tokens=1024,
-    tools=[
-        {
-            "type": "web_search",
-            "name": "web_search"
-        }
-    ],
     messages=[
         {
             "role": "user",

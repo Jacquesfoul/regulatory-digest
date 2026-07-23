@@ -6,22 +6,31 @@ if not api_key:
     raise ValueError("CLAUDE_API_KEY environment variable not set")
 
 client = Anthropic(api_key=api_key)
-industry = "financial services"
-region = "US"
+
 message = client.messages.create(
     model="claude-opus-4-6",
     max_tokens=1024,
+    tools=[
+        {
+            "type": "web_search",
+            "name": "web_search"
+        }
+    ],
     messages=[
         {
             "role": "user",
-            "content": f"""Search for the latest regulatory developments in {industry} for {region} this past week.
+            "content": """Search for the latest news from the past week about France's presidential election campaigns. 
+Focus on top news sources only (Reuters, AFP, BBC, France24, Le Monde, etc.).
 Summarize:
-1. What changed
-2. Who it affects
-3. What action the client should take
-Keep it concise and actionable."""
+1. Key campaign developments
+2. Candidate positions and statements
+3. Polling trends if available
+4. Expected next steps
+
+Keep it concise and objective."""
         }
     ]
 )
+
 digest = message.content[0].text
 print(digest)

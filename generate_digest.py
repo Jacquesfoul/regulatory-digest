@@ -1,24 +1,28 @@
-name: Weekly Regulatory Digest
+import os
+from anthropic import Anthropic
 
-on:
-  schedule:
-    - cron: '0 9 * * 1'  # Every Monday at 9 AM UTC
+client = Anthropic()
 
-jobs:
-  digest:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
-        run: pip install anthropic
-      
-      - name: Generate digest
-        env:
-          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
-        run: python generate_digest.py
+industry = "financial services"
+region = "US"
+
+message = client.messages.create(
+    model="claude-opus-4-6",
+    max_tokens=1024,
+    messages=[
+        {
+            "role": "user",
+            "content": f"""Search for the latest regulatory developments in {industry} for {region} this past week.
+
+Summarize:
+1. What changed
+2. Who it affects
+3. What action the client should take
+
+Keep it concise and actionable."""
+        }
+    ]
+)
+
+digest = message.content[0].text
+print(digest)
